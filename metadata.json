@@ -1,0 +1,24 @@
+{
+  "name": "CSV to Pub/Sub JSON Pipeline",
+  "description": "Reads a CSV from GCS, dynamically extracts headers, and publishes JSON payloads to Pub/Sub.",
+  "parameters": [
+    {
+      "name": "input",
+      "label": "Input GCS File Path",
+      "helpText": "The GCS path to the CSV file (e.g., gs://your-staging-bucket/data.csv)",
+      "isOptional": false,
+      "regexes": [
+        "^gs://.*"
+      ]
+    },
+    {
+      "name": "topic",
+      "label": "Output Pub/Sub Topic",
+      "helpText": "The Pub/Sub topic to publish to (e.g., projects/your-staging-project/topics/your-topic)",
+      "isOptional": false,
+      "regexes": [
+        "^projects/.*/topics/.*"
+      ]
+    }
+  ]
+}
