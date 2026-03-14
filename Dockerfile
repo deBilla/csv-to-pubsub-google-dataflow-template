@@ -13,4 +13,4 @@ COPY csv_to_pubsub.py .
 
 # Set the entrypoint to your script
 ENV FLEX_TEMPLATE_PYTHON_PY_FILE="${WORKDIR}/csv_to_pubsub.py"
-ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE="${WORKDIR}/requirements.txt"
+# Dependencies are pre-installed in the image; no runtime installation needed.

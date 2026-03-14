@@ -28,15 +28,21 @@ gcloud artifacts repositories create dataflow-templates-repo \
 
 ## Build the Flex Template
 
+Step 1 — build the Docker image via Cloud Build (produces a linux/amd64 image):
+
 ```bash
-gcloud dataflow flex-template build $TEMPLATE_BUCKET/templates/csv-to-pubsub.json \
-  --image-gcr-path "$IMAGE_REPO/csv-to-pubsub:latest" \
+gcloud builds submit \
+  --tag "$IMAGE_REPO/csv-to-pubsub:latest" \
+  --project "$PROJECT_ID"
+```
+
+Step 2 — upload the template spec to GCS:
+
+```bash
+gcloud dataflow flex-template build "$TEMPLATE_BUCKET/templates/csv-to-pubsub.json" \
+  --image "$IMAGE_REPO/csv-to-pubsub:latest" \
   --sdk-language "PYTHON" \
-  --flex-template-base-image "PYTHON3" \
   --metadata-file "metadata.json" \
-  --py-path "." \
-  --env "FLEX_TEMPLATE_PYTHON_PY_FILE=csv_to_pubsub.py" \
-  --env "FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=requirements.txt" \
   --project "$PROJECT_ID"
 ```
 
