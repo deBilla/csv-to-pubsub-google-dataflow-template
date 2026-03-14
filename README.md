@@ -69,4 +69,38 @@ python3 csv_to_pubsub.py \
     --temp_location "$STAGING_BUCKET/temp" \
     --runner DataflowRunner
 ```
-# csv-to-pubsub-google-dataflow-template
+
+## Launch from Node.js (Dataflow API)
+
+Install the dependency:
+
+```bash
+npm install @google-cloud/dataflow
+```
+
+```javascript
+const { FlexTemplatesServiceClient } = require('@google-cloud/dataflow').v1beta3;
+
+const client = new FlexTemplatesServiceClient();
+
+async function launchDataflowJob({ inputCsv, topic, campaignId }) {
+  const [response] = await client.launchFlexTemplate({
+    projectId: process.env.PROJECT_ID,
+    location: process.env.REGION,
+    launchParameter: {
+      jobName: `csv-to-pubsub-${campaignId}-${Date.now()}`,
+      containerSpecGcsPath: `${process.env.TEMPLATE_BUCKET}/templates/csv-to-pubsub.json`,
+      parameters: {
+        input: inputCsv,
+        topic: topic,
+      },
+      environment: {
+        tempLocation: `${process.env.STAGING_BUCKET}/temp`,
+      },
+    },
+  });
+
+  console.log('Job launched:', response.job.id);
+  return response.job;
+}
+```
