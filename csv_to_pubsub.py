@@ -4,6 +4,7 @@ import json
 import logging
 
 import apache_beam as beam
+from apache_beam.io.gcp.pubsub import PubsubMessage
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 from google.cloud import storage
@@ -43,9 +44,11 @@ class CsvToJsonDoFn(beam.DoFn):
             # Create a dictionary mapping headers to the row values
             row_dict = dict(zip(self.headers, row))
             
-            # Pub/Sub expects byte strings, so we encode the JSON
             json_str = json.dumps(row_dict)
-            yield json_str.encode('utf-8')
+            yield PubsubMessage(
+                data=json_str.encode('utf-8'),
+                attributes={'send_pn': 'true'}
+            )
         except StopIteration:
             # Handle empty lines gracefully
             pass
@@ -85,7 +88,7 @@ def run(argv=None):
             # Pass our dynamically fetched headers to the workers
             | "Convert to JSON" >> beam.ParDo(CsvToJsonDoFn(headers))
             # Publish to Pub/Sub
-            | "Write to Pub/Sub" >> beam.io.WriteToPubSub(topic=known_args.topic)
+            | "Write to Pub/Sub" >> beam.io.WriteToPubSub(topic=known_args.topic, with_attributes=True)
         )
 
 if __name__ == '__main__':
