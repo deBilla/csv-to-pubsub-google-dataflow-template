@@ -104,3 +104,21 @@ async function launchDataflowJob({ inputCsv, topic, campaignId }) {
   return response.job;
 }
 ```
+
+## Static fields
+
+`--static_fields` takes a JSON object that is merged into **every** published message. Use it for
+values that belong to the run rather than the row:
+
+```
+--static_fields='{"campaign_id":"7f3a...","occurrence_id":"a91c..."}'
+```
+
+Rules of thumb:
+
+- **Per-recipient data belongs in CSV columns.** Per-run data belongs here.
+- Static fields **override** a same-named CSV column, so a value in a user-supplied file cannot
+  spoof a run-scoped field such as `campaign_id`.
+- The JSON is validated at launch, not per row, so a malformed value fails the job rather than
+  producing millions of malformed messages. Values must be scalars.
+- The parameter is optional; omitting it leaves message payloads exactly as before.
