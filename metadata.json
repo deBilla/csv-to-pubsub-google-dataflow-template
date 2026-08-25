@@ -19,6 +19,15 @@
       "regexes": [
         "^projects/.*/topics/.*"
       ]
+    },
+    {
+      "name": "static_fields",
+      "label": "Static Fields (JSON)",
+      "helpText": "Optional JSON object merged into every published message, for values that belong to the run rather than the row, e.g. {\"campaign_id\": \"...\", \"occurrence_id\": \"...\"}. Per-recipient data belongs in CSV columns instead. Static fields override a same-named CSV column.",
+      "isOptional": true,
+      "regexes": [
+        "^\\{.*\\}$"
+      ]
     }
   ]
 }
